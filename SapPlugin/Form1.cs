@@ -9,6 +9,9 @@ namespace SapPlugin
     public partial class Principal : Form
     {
         List<List<string>> ListaMain = new List<List<string>>();
+        List<List<string>> ListaNotas = new List<List<string>>();
+        List<List<string>> ListaClientes = new List<List<string>>();
+
         public Principal()
         {
             InitializeComponent();
@@ -25,6 +28,7 @@ namespace SapPlugin
             ChPeriodo.Visible = false;
             DateInicio.Visible = false;
             DateFin.Visible = false;
+            Exportar.Visible = false;
         }
         public void CargarConceptos()
         {
@@ -41,55 +45,81 @@ namespace SapPlugin
         }
         private void BtnCargar_Click(object sender, EventArgs e)
         {
-            string FileName = "";
-            AbrirArchivo.Filter = "Archivos de Excel (*.xlsx)|*.xlsx";
-            AbrirArchivo.Title = "Selecciona el archivo de Excel";
-            if (AbrirArchivo.ShowDialog() == DialogResult.OK)
+            string FileName = "C:\\Users\\NPACHECO\\Music\\CARTERA.XLSX";
+            try
             {
-                FileName = AbrirArchivo.FileName;
+                // Abre el archivo Excel
 
+                using (XLWorkbook ExcelMain = new XLWorkbook(FileName))
+                {
+                    var HojaMain = ExcelMain.Worksheet(1);
+                    int Filas = HojaMain.RowsUsed().Count();
+                    for (int i = 2; i <= Filas; i++)
+                    {
+                        if (!string.IsNullOrEmpty(HojaMain.Cell("A" + i).Value.ToString()))
+                        {
+                            List<string> Datos = new List<string>();
+                            string Cliente = HojaMain.Cell("A" + i).Value.ToString();
+                            string Asignacion = HojaMain.Cell("B" + i).Value.ToString();
+                            string ClaseDocumento = HojaMain.Cell("E" + i).Value.ToString();
+                            string NoDocumento = HojaMain.Cell("D" + i).Value.ToString();
+                            string Factura = HojaMain.Cell("H" + i).Value.ToString();
+                            string FechaDocumento = HojaMain.Cell("I" + i).Value.ToString();
+                            string FechaVencimiento = HojaMain.Cell("J" + i).Value.ToString();
+                            string Importe = HojaMain.Cell("K" + i).Value.ToString();
+                            string Referencia = HojaMain.Cell("M" + i).Value.ToString();
+                            string CondicionPago = HojaMain.Cell("Q" + i).Value.ToString();
+                            string FD = "";
+                            string FV = "";
+                            if (FechaDocumento != string.Empty && FechaVencimiento != string.Empty)
+                            {
+                                FD = FechaDocumento.Substring(0, 10);
+                                FV = FechaVencimiento.Substring(0, 10);
+                            }
+                            Datos.Add(Cliente);
+                            Datos.Add(Asignacion);
+                            Datos.Add(ClaseDocumento);
+                            Datos.Add(NoDocumento);
+                            Datos.Add(Factura);
+                            Datos.Add(FD);
+                            Datos.Add(FV);
+                            Datos.Add(Importe);
+                            Datos.Add(Referencia);
+                            Datos.Add(CondicionPago);
+                            ListaMain.Add(Datos);
+
+                        }
+                    }
+                }
+                }catch (Exception ex)
+            {
+                // Captura cualquier otro tipo de error
+                MessageBox.Show("Error al procesar el archivo Excel: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            string FileNameNotas = "C:\\Users\\NPACHECO\\Music\\Relacion de Notas.xlsx";
                 try
                 {
                     // Abre el archivo Excel
-
-                    using (XLWorkbook ExcelMain = new XLWorkbook(FileName))
+                    HashSet<string> DocumentosUnicos = new HashSet<string>();
+                    using (XLWorkbook ExcelMainNotas = new XLWorkbook(FileNameNotas))
                     {
-                        var HojaMain = ExcelMain.Worksheet(1);
-                        int Filas = HojaMain.RowsUsed().Count();
+                        var HojaMainNotas = ExcelMainNotas.Worksheet(1);
+                        int Filas = HojaMainNotas.RowsUsed().Count();
                         for (int i = 2; i <= Filas; i++)
                         {
-                            if (!string.IsNullOrEmpty(HojaMain.Cell("A" + i).Value.ToString()))
-                            {
-                                List<string> Datos = new List<string>();
-                                string Cliente = HojaMain.Cell("A" + i).Value.ToString();
-                                string Asignacion = HojaMain.Cell("B" + i).Value.ToString();
-                                string ClaseDocumento = HojaMain.Cell("E" + i).Value.ToString();
-                                string NoDocumento = HojaMain.Cell("D" + i).Value.ToString();
-                                string Factura = HojaMain.Cell("H" + i).Value.ToString();
-                                string FechaDocumento = HojaMain.Cell("I" + i).Value.ToString();
-                                string FechaVencimiento = HojaMain.Cell("J" + i).Value.ToString();
-                                string Importe = HojaMain.Cell("K" + i).Value.ToString();
-                                string Referencia = HojaMain.Cell("M" + i).Value.ToString();
-                                string CondicionPago = HojaMain.Cell("Q" + i).Value.ToString();
-                                string FD = "";
-                                string FV = "";
-                                if (FechaDocumento != string.Empty && FechaVencimiento != string.Empty)
-                                {
-                                    FD = FechaDocumento.Substring(0, 10);
-                                    FV = FechaVencimiento.Substring(0, 10);
-                                }
-                                Datos.Add(Cliente);
-                                Datos.Add(Asignacion);
-                                Datos.Add(ClaseDocumento);
-                                Datos.Add(NoDocumento);
-                                Datos.Add(Factura);
-                                Datos.Add(FD);
-                                Datos.Add(FV);
-                                Datos.Add(Importe);
-                                Datos.Add(Referencia);
-                                Datos.Add(CondicionPago);
-                                ListaMain.Add(Datos);
+                            string Documento = HojaMainNotas.Cell("A" + i).Value.ToString();
 
+                            // Verificamos si el número de documento ya está en el HashSet
+                            if (!string.IsNullOrEmpty(HojaMainNotas.Cell("P" + i).Value.ToString()) && !DocumentosUnicos.Contains(Documento))
+                            {
+                                string Factura = HojaMainNotas.Cell("P" + i).Value.ToString();
+
+                                // Si no está repetido, agregamos el número de documento al HashSet
+                                DocumentosUnicos.Add(Documento);
+
+                                // Agregamos los datos a la lista
+                                List<string> DatosN = new List<string> { Documento, Factura };
+                                ListaNotas.Add(DatosN);
                             }
                         }
                     }
@@ -102,6 +132,7 @@ namespace SapPlugin
                     Buscar.Visible = true;
                     Grid.Visible = true;
                     ChReferencia.Visible = true;
+                    Exportar.Visible = true;
                     CbConceptos.SelectedIndex = 0;
                     CbConceptos.Focus();
                 }
@@ -110,9 +141,51 @@ namespace SapPlugin
                     // Captura cualquier otro tipo de error
                     MessageBox.Show("Error al procesar el archivo Excel: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            string FileNameClientes = "C:\\Users\\NPACHECO\\Music\\Copia de Project UNO Book of Record V21.xlsx";
+            try
+            {
+                // Abre el archivo Excel
+                HashSet<string> NumCliente = new HashSet<string>();
+                using (XLWorkbook ExcelMainClientes = new XLWorkbook(FileNameClientes))
+                {
+                    var HojaMainClientes = ExcelMainClientes.Worksheet(1);
+                    int Filas = HojaMainClientes.RowsUsed().Count();
+                    for (int i = 2; i <= Filas; i++)
+                    {
+                        string ClaveCliente = HojaMainClientes.Cell("AH" + i).Value.ToString();
+
+                        // Verificamos si el número de documento ya está en el HashSet
+                        if (!string.IsNullOrEmpty(HojaMainClientes.Cell("AH" + i).Value.ToString()) && !NumCliente.Contains(ClaveCliente))
+                        {
+                            string Nombre = HojaMainClientes.Cell("AJ" + i).Value.ToString();
+
+                            // Si no está repetido, agregamos el número de documento al HashSet
+                            NumCliente.Add(ClaveCliente);
+
+                            // Agregamos los datos a la lista
+                            List<string> DatosC = new List<string> { ClaveCliente, Nombre };
+                            ListaClientes.Add(DatosC);
+                        }
+                    }
+                }
+                LbTitulo.Text = Path.GetFileName(FileName);
+                BtnCargar.Visible = false;
+                Texto1.Visible = false;
+                CbConceptos.Visible = true;
+                TxtFolio.Visible = true;
+                Texto2.Visible = true;
+                Buscar.Visible = true;
+                Grid.Visible = true;
+                ChReferencia.Visible = true;
+                Exportar.Visible = true;
+                CbConceptos.SelectedIndex = 0;
+                CbConceptos.Focus();
             }
-            else
-                return;
+            catch (Exception ex)
+            {
+                // Captura cualquier otro tipo de error
+                MessageBox.Show("Error al procesar el archivo Excel: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         public string Referencia(string Factura)
         {
@@ -315,11 +388,12 @@ namespace SapPlugin
                                     Grid.Rows.Add(sublista[0], sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     if (sublista[2] == "CI")
                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = System.Drawing.Color.CadetBlue;
-                                    if(sublista[8].ToString() == referencia)
+                                    if (sublista[8].ToString() == referencia)
                                     {
                                         Grid.Rows[Grid.Rows.Count - 1].Cells[8].Style.BackColor = System.Drawing.Color.Gold;
                                     }
-                                    if(sublista[4].ToString() == TxtFolio.Text){
+                                    if (sublista[4].ToString() == TxtFolio.Text)
+                                    {
                                         Grid.Rows[Grid.Rows.Count - 1].Cells[4].Style.BackColor = System.Drawing.Color.Gold;
                                     }
                                     //if (sublista[2] == "CD")
@@ -554,6 +628,10 @@ namespace SapPlugin
         {
             DateInicio.Visible = ChPeriodo.Checked;
             DateFin.Visible = ChPeriodo.Checked;
+        }
+
+        private void Exportar_Click(object sender, EventArgs e)
+        {
         }
     }
 }

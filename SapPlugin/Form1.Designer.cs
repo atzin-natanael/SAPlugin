@@ -59,6 +59,7 @@
             DateInicio = new DateTimePicker();
             DateFin = new DateTimePicker();
             LbTitulo = new Label();
+            Exportar = new Button();
             ((System.ComponentModel.ISupportInitialize)Grid).BeginInit();
             MenuSaldo.SuspendLayout();
             SuspendLayout();
@@ -343,12 +344,33 @@
             LbTitulo.TabIndex = 13;
             LbTitulo.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // Exportar
+            // 
+            Exportar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            Exportar.BackColor = Color.FromArgb(224, 224, 224);
+            Exportar.Cursor = Cursors.Hand;
+            Exportar.FlatAppearance.MouseDownBackColor = Color.Gray;
+            Exportar.FlatStyle = FlatStyle.Flat;
+            Exportar.Font = new Font("Arial Rounded MT Bold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            Exportar.ForeColor = SystemColors.ActiveCaptionText;
+            Exportar.Image = (Image)resources.GetObject("Exportar.Image");
+            Exportar.ImageAlign = ContentAlignment.MiddleLeft;
+            Exportar.Location = new Point(823, 156);
+            Exportar.Name = "Exportar";
+            Exportar.Size = new Size(146, 52);
+            Exportar.TabIndex = 14;
+            Exportar.Text = "Exportar";
+            Exportar.TextAlign = ContentAlignment.MiddleRight;
+            Exportar.UseVisualStyleBackColor = false;
+            Exportar.Click += Exportar_Click;
+            // 
             // Principal
             // 
             AutoScaleDimensions = new SizeF(11F, 22F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(50, 50, 50);
             ClientSize = new Size(1008, 729);
+            Controls.Add(Exportar);
             Controls.Add(LbTitulo);
             Controls.Add(DateFin);
             Controls.Add(DateInicio);
@@ -407,5 +429,6 @@
         private DataGridViewTextBoxColumn Column7;
         private DataGridViewTextBoxColumn Column8;
         private Label LbTitulo;
+        private Button Exportar;
     }
 }
