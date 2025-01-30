@@ -75,6 +75,7 @@ namespace SapPlugin
                             string Referencia = HojaMain.Cell("N" + i).Value.ToString();
                             string CondicionPago = HojaMain.Cell("Q" + i).Value.ToString();
                             string Referencia2 = HojaMain.Cell("O" + i).Value.ToString();
+                            string CG = HojaMain.Cell("G" + i).Value.ToString();
                             string FD = "";
                             string FV = "";
                             if (FechaDocumento != string.Empty && FechaVencimiento != string.Empty)
@@ -93,6 +94,7 @@ namespace SapPlugin
                             Datos.Add(Referencia);
                             Datos.Add(CondicionPago);
                             Datos.Add(Referencia2);
+                            Datos.Add(CG);
                             ListaMain.Add(Datos);
 
                         }
@@ -250,7 +252,15 @@ namespace SapPlugin
                                 string referenciaFact = sublista[8].ToString();
                                 string referenciaFact2 = sublista[10].ToString();
                                 bool ReferenciaEncontrada = false;
-
+                                foreach(var Buc in ListaMain)
+                                {
+                                    if (Buc[2] == "DZ" && (Buc[11].ToString() == referenciaFact && referenciaFact != string.Empty || Buc[11].ToString() == referenciaFact2 && referenciaFact2 != string.Empty))
+                                    {
+                                        Grid.Rows.Add(id, Buc[0], ClienteNombre, Buc[1], Buc[2], Buc[3], Buc[4], Buc[5], Buc[6], Buc[7], Buc[8], Buc[9]);
+                                            Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
+                                            Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                    }
+                                }
                                 foreach (var sublista2 in ListaNotas)
                                 {
                                     if (sublista2[1].ToString() == referenciaFact)
@@ -441,7 +451,15 @@ namespace SapPlugin
                                         Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
                                         Grid.Rows[Grid.Rows.Count - 1].Height = 50;
-
+                                        foreach (var Buc in ListaMain)
+                                        {
+                                            if (Buc[2] == "DZ" && (Buc[11].ToString() == referenciaFact && referenciaFact != string.Empty || Buc[11].ToString() == referenciaFact2 && referenciaFact2 != string.Empty))
+                                            {
+                                                Grid.Rows.Add(id, Buc[0], ClienteNombre, Buc[1], Buc[2], Buc[3], Buc[4], Buc[5], Buc[6], Buc[7], Buc[8], Buc[9]);
+                                                Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
+                                                Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                            }
+                                        }
                                         foreach (var sublista2 in ListaNotas)
                                         {
                                             if (sublista2[1].ToString() == referenciaFact)
