@@ -61,8 +61,10 @@
             GuardarArchivo = new SaveFileDialog();
             RadioAB = new RadioButton();
             RadioCI = new RadioButton();
+            pictureBox1 = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)Grid).BeginInit();
             MenuSaldo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // TxtFolio
@@ -71,15 +73,17 @@
             TxtFolio.CharacterCasing = CharacterCasing.Upper;
             TxtFolio.Location = new Point(264, 89);
             TxtFolio.Name = "TxtFolio";
+            TxtFolio.PlaceholderText = "Número Cliente";
             TxtFolio.Size = new Size(165, 29);
             TxtFolio.TabIndex = 2;
+            TxtFolio.KeyDown += TxtFolio_KeyDown;
             // 
             // Texto2
             // 
             Texto2.Anchor = AnchorStyles.Top;
             Texto2.AutoSize = true;
             Texto2.Font = new Font("Arial", 16F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            Texto2.ForeColor = SystemColors.ControlLight;
+            Texto2.ForeColor = Color.FromArgb(0, 0, 240);
             Texto2.Location = new Point(264, 47);
             Texto2.Name = "Texto2";
             Texto2.Size = new Size(123, 25);
@@ -94,13 +98,14 @@
             CbConceptos.Location = new Point(408, 45);
             CbConceptos.Name = "CbConceptos";
             CbConceptos.Size = new Size(201, 30);
-            CbConceptos.TabIndex = 4;
+            CbConceptos.TabIndex = 1;
             CbConceptos.SelectedIndexChanged += CbConceptos_SelectedIndexChanged;
+            CbConceptos.KeyDown += CbConceptos_KeyDown;
             // 
             // Buscar
             // 
             Buscar.Anchor = AnchorStyles.Top;
-            Buscar.BackColor = Color.FromArgb(224, 224, 224);
+            Buscar.BackColor = Color.FromArgb(0, 192, 0);
             Buscar.Cursor = Cursors.Hand;
             Buscar.FlatStyle = FlatStyle.Flat;
             Buscar.ForeColor = SystemColors.ActiveCaptionText;
@@ -108,7 +113,7 @@
             Buscar.Location = new Point(675, 84);
             Buscar.Name = "Buscar";
             Buscar.Size = new Size(149, 38);
-            Buscar.TabIndex = 5;
+            Buscar.TabIndex = 3;
             Buscar.Text = "Buscar";
             Buscar.UseVisualStyleBackColor = false;
             Buscar.Click += Buscar_Click;
@@ -241,7 +246,7 @@
             TextoSaldo.Location = new Point(12, 176);
             TextoSaldo.Name = "TextoSaldo";
             TextoSaldo.Size = new Size(102, 31);
-            TextoSaldo.TabIndex = 8;
+            TextoSaldo.TabIndex = 0;
             TextoSaldo.Text = "Saldo:";
             TextoSaldo.TextAlign = ContentAlignment.MiddleCenter;
             // 
@@ -255,7 +260,7 @@
             LbCantidad.Location = new Point(114, 176);
             LbCantidad.Name = "LbCantidad";
             LbCantidad.Size = new Size(0, 32);
-            LbCantidad.TabIndex = 9;
+            LbCantidad.TabIndex = 0;
             LbCantidad.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // MenuSaldo
@@ -276,11 +281,11 @@
             // 
             ChPeriodo.AutoSize = true;
             ChPeriodo.Cursor = Cursors.Hand;
-            ChPeriodo.ForeColor = SystemColors.Control;
-            ChPeriodo.Location = new Point(181, 15);
+            ChPeriodo.ForeColor = Color.FromArgb(0, 0, 240);
+            ChPeriodo.Location = new Point(112, 11);
             ChPeriodo.Name = "ChPeriodo";
             ChPeriodo.Size = new Size(96, 26);
-            ChPeriodo.TabIndex = 10;
+            ChPeriodo.TabIndex = 4;
             ChPeriodo.Text = "Periodo";
             ChPeriodo.UseVisualStyleBackColor = true;
             ChPeriodo.CheckedChanged += ChPeriodo_CheckedChanged;
@@ -289,27 +294,28 @@
             // 
             DateInicio.CalendarFont = new Font("Arial", 18F);
             DateInicio.Format = DateTimePickerFormat.Short;
-            DateInicio.Location = new Point(150, 47);
+            DateInicio.Location = new Point(81, 43);
             DateInicio.Name = "DateInicio";
             DateInicio.Size = new Size(157, 29);
-            DateInicio.TabIndex = 11;
+            DateInicio.TabIndex = 5;
             // 
             // DateFin
             // 
             DateFin.CalendarFont = new Font("Arial", 18F);
             DateFin.Format = DateTimePickerFormat.Short;
-            DateFin.Location = new Point(150, 97);
+            DateFin.Location = new Point(81, 93);
             DateFin.Name = "DateFin";
             DateFin.Size = new Size(157, 29);
-            DateFin.TabIndex = 12;
+            DateFin.TabIndex = 6;
             DateFin.Value = new DateTime(2025, 1, 24, 0, 0, 0, 0);
+            DateFin.KeyDown += DateFin_KeyDown;
             // 
             // LbTitulo
             // 
             LbTitulo.Anchor = AnchorStyles.Top;
             LbTitulo.AutoSize = true;
             LbTitulo.Font = new Font("Georgia", 20.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            LbTitulo.ForeColor = Color.Gold;
+            LbTitulo.ForeColor = Color.FromArgb(0, 192, 0);
             LbTitulo.Location = new Point(407, 9);
             LbTitulo.Name = "LbTitulo";
             LbTitulo.Size = new Size(0, 31);
@@ -330,7 +336,7 @@
             Exportar.Location = new Point(823, 156);
             Exportar.Name = "Exportar";
             Exportar.Size = new Size(146, 52);
-            Exportar.TabIndex = 14;
+            Exportar.TabIndex = 0;
             Exportar.Text = "Exportar";
             Exportar.TextAlign = ContentAlignment.MiddleRight;
             Exportar.UseVisualStyleBackColor = false;
@@ -345,7 +351,7 @@
             RadioAB.Location = new Point(264, 145);
             RadioAB.Name = "RadioAB";
             RadioAB.Size = new Size(55, 26);
-            RadioAB.TabIndex = 15;
+            RadioAB.TabIndex = 0;
             RadioAB.TabStop = true;
             RadioAB.Text = "AB";
             RadioAB.UseVisualStyleBackColor = true;
@@ -359,10 +365,20 @@
             RadioCI.Location = new Point(264, 176);
             RadioCI.Name = "RadioCI";
             RadioCI.Size = new Size(47, 26);
-            RadioCI.TabIndex = 16;
+            RadioCI.TabIndex = 0;
             RadioCI.TabStop = true;
             RadioCI.Text = "CI";
             RadioCI.UseVisualStyleBackColor = true;
+            // 
+            // pictureBox1
+            // 
+            pictureBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+            pictureBox1.Location = new Point(805, 10);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(191, 62);
+            pictureBox1.TabIndex = 14;
+            pictureBox1.TabStop = false;
             // 
             // Principal
             // 
@@ -370,6 +386,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(50, 50, 50);
             ClientSize = new Size(1008, 729);
+            Controls.Add(pictureBox1);
             Controls.Add(RadioCI);
             Controls.Add(RadioAB);
             Controls.Add(Exportar);
@@ -395,6 +412,7 @@
             Load += Principal_Load;
             ((System.ComponentModel.ISupportInitialize)Grid).EndInit();
             MenuSaldo.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -429,5 +447,6 @@
         private DataGridViewTextBoxColumn Column6;
         private DataGridViewTextBoxColumn Column7;
         private DataGridViewTextBoxColumn Column8;
+        private PictureBox pictureBox1;
     }
 }

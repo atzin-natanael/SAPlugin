@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using ClosedXML.Excel;
@@ -83,6 +84,7 @@ namespace SapPlugin
                                 FD = FechaDocumento.Substring(0, 10);
                                 FV = FechaVencimiento.Substring(0, 10);
                             }
+                            decimal importe = decimal.Parse(Importe);
                             Datos.Add(Cliente);
                             Datos.Add(Asignacion);
                             Datos.Add(ClaseDocumento);
@@ -90,7 +92,7 @@ namespace SapPlugin
                             Datos.Add(Factura);
                             Datos.Add(FD);
                             Datos.Add(FV);
-                            Datos.Add(Importe);
+                            Datos.Add(importe.ToString("N"));
                             Datos.Add(Referencia);
                             Datos.Add(CondicionPago);
                             Datos.Add(Referencia2);
@@ -181,7 +183,7 @@ namespace SapPlugin
                 Texto2.Visible = true;
                 Buscar.Visible = true;
                 Grid.Visible = true;
-                Exportar.Visible = true;  
+                Exportar.Visible = true;
                 CbConceptos.SelectedIndex = 0;
                 CbConceptos.Focus();
             }
@@ -222,9 +224,12 @@ namespace SapPlugin
                         LbCantidad.Visible = false;
                         TextoSaldo.Visible = false;
                         ClienteNombre = string.Empty;
+                        int fila2 = 0;
                         foreach (var sublista in ListaMain)
                         {
-                            if (sublista[3] == TxtFolio.Text)
+                            decimal saldos2 = 0;
+                            bool bandera2 = false;
+                            if ((sublista[8] == TxtFolio.Text) || sublista[10] == TxtFolio.Text)
                             {
                                 id++;
                                 toggleColor = !toggleColor;
@@ -236,15 +241,16 @@ namespace SapPlugin
                                         ClienteNombre = Cliente[1];
                                     }
                                 }
-                                Grid.Columns[10].HeaderText = "Referencia";
+                                Grid.Columns[10].HeaderText = "Saldo";
                                 // Añadir la fila al DataGridView
-                                Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
-
+                                Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], "", sublista[9]);
+                                fila2 = Grid.Rows.Count;
                                 // Cambiar el color de fondo alternado
                                 Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
                                 // Cambiar la altura de la fila
                                 Grid.Rows[Grid.Rows.Count - 1].Height = 50;
-
+                                saldos2 += decimal.Parse(sublista[7].ToString());
+                                bandera2 = true;
                                 // Alternar el valor del color para la siguiente fila
                                 //toggleColor = !toggleColor;
                                 encontrado = true;
@@ -252,13 +258,15 @@ namespace SapPlugin
                                 string referenciaFact = sublista[8].ToString();
                                 string referenciaFact2 = sublista[10].ToString();
                                 bool ReferenciaEncontrada = false;
-                                foreach(var Buc in ListaMain)
+                                foreach (var Buc in ListaMain)
                                 {
                                     if (Buc[2] == "DZ" && (Buc[11].ToString() == referenciaFact && referenciaFact != string.Empty || Buc[11].ToString() == referenciaFact2 && referenciaFact2 != string.Empty))
                                     {
                                         Grid.Rows.Add(id, Buc[0], ClienteNombre, Buc[1], Buc[2], Buc[3], Buc[4], Buc[5], Buc[6], Buc[7], Buc[8], Buc[9]);
-                                            Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
-                                            Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                        Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
+                                        Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                        bandera2 = true;
+                                        saldos2 += decimal.Parse(Buc[7].ToString());
                                     }
                                 }
                                 foreach (var sublista2 in ListaNotas)
@@ -270,9 +278,11 @@ namespace SapPlugin
                                         {
                                             if (Buscardocto[3] == sublista2[0])
                                             {
-                                                Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], Buscardocto[8], Buscardocto[9]);
+                                                Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], "", Buscardocto[9]);
                                                 Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
                                                 Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                                saldos2 += decimal.Parse(Buscardocto[7].ToString());
+                                                bandera2 = true;
                                                 //toggleColor = !toggleColor; // Alternar el color para la siguiente fila
                                             }
                                         }
@@ -289,15 +299,20 @@ namespace SapPlugin
                                             {
                                                 if (Buscardocto[3] == sublista2[0])
                                                 {
-                                                    Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], Buscardocto[8], Buscardocto[9]);
+                                                    Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], "", Buscardocto[9]);
                                                     Grid.Rows[Grid.Rows.Count - 1].Height = 50;
                                                     Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
-                                                    //toggleColor = !toggleColor; // Alternar el color para la siguiente fila
+                                                    saldos2 += decimal.Parse(Buscardocto[7].ToString());
+                                                    bandera2 = true;
                                                 }
                                             }
                                         }
                                     }
                                 }
+                            }
+                            if (bandera2)
+                            {
+                                Grid.Rows[fila2 - 1].Cells[10].Value = saldos2.ToString("N");
                             }
                         }
                         Grid.ClearSelection();
@@ -310,18 +325,21 @@ namespace SapPlugin
                         LbCantidad.Visible = false;
                         TextoSaldo.Visible = false;
                         int fila = 0;
+                        int fila3 = 0;
+                        Grid.Columns[10].Visible = true;
                         Grid.Columns[10].HeaderText = "Saldo";
                         decimal saldos = 0;
+                        decimal saldos4 = 0;
                         if (RadioCI.Checked)
                         {
                             foreach (var sublista in ListaMain)
                             {
-                                bool bandera= false;
+                                bool bandera = false;
                                 if (ChPeriodo.Checked)
                                 {
                                     if (sublista[2] == "CI" && sublista[0] == TxtFolio.Text && DateTime.Parse(sublista[5].ToString()) <= DateTime.Parse(DateFin.Text) && DateTime.Parse(sublista[5].ToString()) >= DateTime.Parse(DateInicio.Text))
                                     {
-                                        
+
                                         foreach (var Cliente in ListaClientes)
                                         {
                                             if (Cliente[0] == sublista[0])
@@ -421,15 +439,16 @@ namespace SapPlugin
                                     }
                                 }
                                 if (bandera)
-                                    {
-                                        Grid.Rows[fila-1].Cells[10].Value = saldos.ToString();
-                                    }
+                                {
+                                    Grid.Rows[fila - 1].Cells[10].Value = saldos.ToString("N");
                                 }
+                            }
                         }
                         if (RadioAB.Checked)
                         {
                             foreach (var sublista in ListaMain)
                             {
+                                bool bandera3 = false;
                                 if (ChPeriodo.Checked)
                                 {
                                     if (sublista[2] == "AB" && sublista[0] == TxtFolio.Text && DateTime.Parse(sublista[5].ToString()) <= DateTime.Parse(DateFin.Text) && DateTime.Parse(sublista[5].ToString()) >= DateTime.Parse(DateInicio.Text))
@@ -447,17 +466,23 @@ namespace SapPlugin
                                         id++;
                                         toggleColor = !toggleColor;
                                         encontrado = true;
-                                        Grid.Columns[10].Visible = false;
-                                        Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
+                                        Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], "", sublista[9]);
                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
                                         Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                        fila3 = Grid.Rows.Count;
+                                        bandera3 = true;
+                                        saldos4 = 0;
+                                        saldos4 += decimal.Parse(sublista[7].ToString());
                                         foreach (var Buc in ListaMain)
                                         {
                                             if (Buc[2] == "DZ" && (Buc[11].ToString() == referenciaFact && referenciaFact != string.Empty || Buc[11].ToString() == referenciaFact2 && referenciaFact2 != string.Empty))
                                             {
-                                                Grid.Rows.Add(id, Buc[0], ClienteNombre, Buc[1], Buc[2], Buc[3], Buc[4], Buc[5], Buc[6], Buc[7], Buc[8], Buc[9]);
+                                                Grid.Rows.Add(id, Buc[0], ClienteNombre, Buc[1], Buc[2], Buc[3], Buc[4], Buc[5], Buc[6], Buc[7], "", Buc[9]);
                                                 Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
                                                 Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                                saldos4 += decimal.Parse(Buc[7].ToString());
+                                                bandera3 = true;
+
                                             }
                                         }
                                         foreach (var sublista2 in ListaNotas)
@@ -469,9 +494,11 @@ namespace SapPlugin
                                                 {
                                                     if (Buscardocto[3] == sublista2[0])
                                                     {
-                                                        Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], Buscardocto[8], Buscardocto[9]);
+                                                        Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7],"", Buscardocto[9]);
                                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
                                                         Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                                        bandera3 = true;
+                                                        saldos4 += decimal.Parse(Buscardocto[7].ToString());
                                                         //toggleColor = !toggleColor; // Alternar el color para la siguiente fila
                                                     }
                                                 }
@@ -488,8 +515,10 @@ namespace SapPlugin
                                                     {
                                                         if (Buscardocto[3] == sublista2[0])
                                                         {
-                                                            Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], Buscardocto[8], Buscardocto[9]);
+                                                            Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], "", Buscardocto[9]);
                                                             Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                                            saldos4 += decimal.Parse(Buscardocto[7].ToString());
+                                                            bandera3 = true;
                                                             Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
                                                             //toggleColor = !toggleColor; // Alternar el color para la siguiente fila
                                                         }
@@ -516,10 +545,24 @@ namespace SapPlugin
                                         id++;
                                         encontrado = true;
                                         toggleColor = !toggleColor;
-                                        Grid.Columns[10].Visible = false;
-                                        Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
+                                        saldos4 = 0;
+                                        Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], "", sublista[9]);
+                                        fila3 = Grid.Rows.Count;
                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
                                         Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                        saldos4 += decimal.Parse(sublista[7].ToString());
+                                        bandera3 = true;
+                                        foreach (var Buc in ListaMain)
+                                        {
+                                            if (Buc[2] == "DZ" && (Buc[11].ToString() == referenciaFact && referenciaFact != string.Empty || Buc[11].ToString() == referenciaFact2 && referenciaFact2 != string.Empty))
+                                            {
+                                                Grid.Rows.Add(id, Buc[0], ClienteNombre, Buc[1], Buc[2], Buc[3], Buc[4], Buc[5], Buc[6], Buc[7], "", Buc[9]);
+                                                Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
+                                                Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                                saldos4 += decimal.Parse(Buc[7].ToString());
+                                                bandera3 = true;
+                                            }
+                                        }
                                         foreach (var sublista2 in ListaNotas)
                                         {
                                             if (sublista2[1].ToString() == referenciaFact)
@@ -529,9 +572,11 @@ namespace SapPlugin
                                                 {
                                                     if (Buscardocto[3] == sublista2[0])
                                                     {
-                                                        Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], Buscardocto[8], Buscardocto[9]);
+                                                        Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], "", Buscardocto[9]);
                                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
                                                         Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                                        bandera3 = true;
+                                                        saldos4 += decimal.Parse(Buscardocto[7].ToString());
                                                         //toggleColor = !toggleColor; // Alternar el color para la siguiente fila
                                                     }
                                                 }
@@ -548,8 +593,10 @@ namespace SapPlugin
                                                     {
                                                         if (Buscardocto[3] == sublista2[0])
                                                         {
-                                                            Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], Buscardocto[8], Buscardocto[9]);
+                                                            Grid.Rows.Add(id, Buscardocto[0], ClienteNombre, Buscardocto[1], Buscardocto[2], Buscardocto[3], Buscardocto[4], Buscardocto[5], Buscardocto[6], Buscardocto[7], "", Buscardocto[9]);
                                                             Grid.Rows[Grid.Rows.Count - 1].Height = 50;
+                                                            saldos4 += decimal.Parse(Buscardocto[7].ToString());
+                                                            bandera3 = true;
                                                             Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = toggleColor ? System.Drawing.Color.LightBlue : System.Drawing.Color.White;
                                                             //toggleColor = !toggleColor; // Alternar el color para la siguiente fila
                                                         }
@@ -561,9 +608,13 @@ namespace SapPlugin
 
 
                                 }
+                                if (bandera3)
+                                {
+                                    Grid.Rows[fila3 - 1].Cells[10].Value = saldos4.ToString("N");
+                                }
                             }
                         }
-                            Grid.ClearSelection();
+                        Grid.ClearSelection();
                         if (!encontrado)
                         {
                             MessageBox.Show("No se encontraron resultados", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -577,6 +628,7 @@ namespace SapPlugin
                                 // Verificar si la sublista contiene el valor que buscas
                                 if (sublista[1].ToString() == TxtFolio.Text && DateTime.Parse(sublista[5].ToString()) <= DateTime.Parse(DateFin.Text) && DateTime.Parse(sublista[5].ToString()) >= DateTime.Parse(DateInicio.Text))
                                 {
+                                    Grid.Columns[10].Visible = false;
                                     foreach (var Cliente in ListaClientes)
                                     {
                                         if (Cliente[0] == sublista[0])
@@ -585,10 +637,11 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
+                                    Grid.Columns[10].Visible = false;
                                     Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     Grid.Rows[Grid.Rows.Count - 1].Height = 50;
-                                    Grid.Rows[Grid.Rows.Count - 1].Cells[5].Style.BackColor = System.Drawing.Color.Gold;
-                                    Grid.Rows[Grid.Rows.Count - 1].Cells[1].Style.BackColor = System.Drawing.Color.Gold;
+                                    Grid.Rows[Grid.Rows.Count - 1].Cells[7].Style.BackColor = System.Drawing.Color.Gold;
+                                    Grid.Rows[Grid.Rows.Count - 1].Cells[3].Style.BackColor = System.Drawing.Color.Gold;
                                     encontrado = true;
                                 }
                             }
@@ -608,11 +661,12 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
-                                    Grid.Rows.Add(id, sublista[0],ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
+                                    Grid.Columns[10].Visible = false;
+                                    Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     if (sublista[2] == "CI")
                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = System.Drawing.Color.CadetBlue;
                                     Grid.Rows[Grid.Rows.Count - 1].Height = 50;
-                                    Grid.Rows[Grid.Rows.Count - 1].Cells[1].Style.BackColor = System.Drawing.Color.Gold;
+                                    Grid.Rows[Grid.Rows.Count - 1].Cells[3].Style.BackColor = System.Drawing.Color.Gold;
                                     encontrado = true;
                                 }
                             }
@@ -633,6 +687,7 @@ namespace SapPlugin
                                 // Verificar si la sublista contiene el valor que buscas
                                 if (sublista[2].ToString() == TxtFolio.Text && DateTime.Parse(sublista[5].ToString()) <= DateTime.Parse(DateFin.Text) && DateTime.Parse(sublista[5].ToString()) >= DateTime.Parse(DateInicio.Text))
                                 {
+                                    Grid.Columns[10].Visible = false;
                                     foreach (var Cliente in ListaClientes)
                                     {
                                         if (Cliente[0] == sublista[0])
@@ -641,7 +696,8 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
-                                    Grid.Rows.Add(id, sublista[0],ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
+                                    Grid.Columns[10].Visible = false;
+                                    Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     Grid.Rows[Grid.Rows.Count - 1].Height = 50;
                                     Grid.Rows[Grid.Rows.Count - 1].Cells[7].Style.BackColor = System.Drawing.Color.Gold;
                                     Grid.Rows[Grid.Rows.Count - 1].Cells[4].Style.BackColor = System.Drawing.Color.Gold;
@@ -664,7 +720,8 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
-                                    Grid.Rows.Add(id, sublista[0],ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
+                                    Grid.Columns[10].Visible = false;
+                                    Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     Grid.Rows[Grid.Rows.Count - 1].Height = 50;
                                     Grid.Rows[Grid.Rows.Count - 1].Cells[4].Style.BackColor = System.Drawing.Color.Gold;
                                     encontrado = true;
@@ -684,6 +741,7 @@ namespace SapPlugin
                         {
                             foreach (var sublista in ListaMain)
                             {
+                                Grid.Columns[10].Visible = false;
                                 // Verificar si la sublista contiene el valor que buscas
                                 if (sublista[3].ToString() == TxtFolio.Text && DateTime.Parse(sublista[5].ToString()) <= DateTime.Parse(DateFin.Text) && DateTime.Parse(sublista[5].ToString()) >= DateTime.Parse(DateInicio.Text))
                                 {
@@ -695,7 +753,8 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
-                                    Grid.Rows.Add(id, sublista[0],ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
+                                    Grid.Columns[10].Visible = false;
+                                    Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     Grid.Rows[Grid.Rows.Count - 1].Height = 50;
                                     Grid.Rows[Grid.Rows.Count - 1].Cells[5].Style.BackColor = System.Drawing.Color.Gold;
                                     Grid.Rows[Grid.Rows.Count - 1].Cells[7].Style.BackColor = System.Drawing.Color.Gold;
@@ -718,6 +777,7 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
+                                    Grid.Columns[10].Visible = false;
                                     Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     if (sublista[2] == "CI")
                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = System.Drawing.Color.CadetBlue;
@@ -736,6 +796,8 @@ namespace SapPlugin
                         break;
                     case "Factura":
                         encontrado = false;
+                        Grid.Columns[10].Visible = true;
+                        Grid.Columns[10].HeaderText = "Referencia";
                         string referencia = "";
                         LbCantidad.Visible = true;
                         TextoSaldo.Visible = true;
@@ -760,7 +822,7 @@ namespace SapPlugin
                                 {
                                     Grid.Rows[Grid.Rows.Count - 1].Cells[6].Style.BackColor = System.Drawing.Color.Gold;
                                 }
-                                if (sublista[2] == "CI")
+                                if (sublista[2] == "CI" || sublista[2] == "CC" || sublista[2] == "AB")
                                 {
                                     Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = System.Drawing.Color.CadetBlue;
                                     foreach (var notas in ListaNotas)
@@ -782,7 +844,7 @@ namespace SapPlugin
                                 //if (sublista[2] == "CD")
                                 //    saldo -= decimal.Parse(sublista[7].ToString());
                                 //else
-                                LbCantidad.Text = saldo.ToString();
+                                LbCantidad.Text = saldo.ToString("N");
                                 Grid.Rows[Grid.Rows.Count - 1].Height = 50;
                                 encontrado = true;
                             }
@@ -796,6 +858,8 @@ namespace SapPlugin
                         break;
                     case "Fecha de Documento":
                         encontrado = false;
+                        LbCantidad.Visible = false;
+                        TextoSaldo.Visible = false;
                         foreach (var sublista in ListaMain)
                         {
                             // Verificar si la sublista contiene el valor que buscas
@@ -809,6 +873,7 @@ namespace SapPlugin
                                     }
                                 }
                                 id++;
+                                Grid.Columns[10].Visible = false;
                                 Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                 if (sublista[2] == "CI")
                                     Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = System.Drawing.Color.CadetBlue;
@@ -825,6 +890,8 @@ namespace SapPlugin
                         break;
                     case "Fecha de Vencimiento":
                         encontrado = false;
+                        LbCantidad.Visible = false;
+                        TextoSaldo.Visible = false;
                         foreach (var sublista in ListaMain)
                         {
                             // Verificar si la sublista contiene el valor que buscas
@@ -837,6 +904,7 @@ namespace SapPlugin
                                         ClienteNombre = Cliente[1];
                                     }
                                 }
+                                Grid.Columns[10].Visible = false;
                                 id++;
                                 Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                 if (sublista[2] == "CI")
@@ -870,6 +938,9 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
+                                    LbCantidad.Visible = false;
+                                    TextoSaldo.Visible = false;
+                                    Grid.Columns[10].Visible = false;
                                     Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     if (sublista[2] == "CI")
                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = System.Drawing.Color.CadetBlue;
@@ -907,7 +978,7 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
-                                    Grid.Rows.Add(id, sublista[0],ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
+                                    Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     Grid.Rows[Grid.Rows.Count - 1].Height = 50;
                                     Grid.Rows[Grid.Rows.Count - 1].Cells[7].Style.BackColor = System.Drawing.Color.Gold;
                                     Grid.Rows[Grid.Rows.Count - 1].Cells[9].Style.BackColor = System.Drawing.Color.Gold;
@@ -930,7 +1001,7 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
-                                    Grid.Rows.Add(id, sublista[0],ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
+                                    Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     if (sublista[2] == "CI")
                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = System.Drawing.Color.CadetBlue;
                                     Grid.Rows[Grid.Rows.Count - 1].Height = 50;
@@ -963,7 +1034,8 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
-                                    Grid.Rows.Add(id, sublista[0],ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
+                                    Grid.Columns[10].Visible = false;
+                                    Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     Grid.Rows[Grid.Rows.Count - 1].Height = 50;
                                     Grid.Rows[Grid.Rows.Count - 1].Cells[7].Style.BackColor = System.Drawing.Color.Gold;
                                     Grid.Rows[Grid.Rows.Count - 1].Cells[11].Style.BackColor = System.Drawing.Color.Gold;
@@ -986,7 +1058,7 @@ namespace SapPlugin
                                         }
                                     }
                                     id++;
-                                    Grid.Rows.Add(id, sublista[0],ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
+                                    Grid.Rows.Add(id, sublista[0], ClienteNombre, sublista[1], sublista[2], sublista[3], sublista[4], sublista[5], sublista[6], sublista[7], sublista[8], sublista[9]);
                                     if (sublista[2] == "CI")
                                         Grid.Rows[Grid.Rows.Count - 1].DefaultCellStyle.BackColor = System.Drawing.Color.CadetBlue;
                                     Grid.Rows[Grid.Rows.Count - 1].Height = 50;
@@ -1020,18 +1092,45 @@ namespace SapPlugin
 
         private void CbConceptos_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (CbConceptos.Text == "Clase" || CbConceptos.Text == "Asignación" || CbConceptos.Text == "No. Documento" || CbConceptos.Text == "Referencia" || CbConceptos.Text == "Condición de Pago")
+            if (CbConceptos.Text == "Cliente")
+                TxtFolio.PlaceholderText = "Número Cliente";
+            if (CbConceptos.Text == "Factura")
+                TxtFolio.PlaceholderText = "Folio Factura";
+            if (CbConceptos.Text == "Fecha de Documento")
+                TxtFolio.PlaceholderText = "DD/MM/YYYY";
+            if (CbConceptos.Text == "Fecha de Vencimiento")
+                TxtFolio.PlaceholderText = "DD/MM/YYYY";
+            if (CbConceptos.Text == "Importe")
+                TxtFolio.PlaceholderText = "Importe";
+            if (CbConceptos.Text == "Condición de Pago")
+                TxtFolio.PlaceholderText = "Condición";
+            if (CbConceptos.Text == "Clase")
+                TxtFolio.PlaceholderText = "Clase";
+            if (CbConceptos.Text == "No Documento")
+                TxtFolio.PlaceholderText = "No. Documento";
+            if (CbConceptos.Text == "Asignación")
+                TxtFolio.PlaceholderText = "Asignación";
+            if (CbConceptos.Text == "Relación AB")
+                TxtFolio.PlaceholderText = "No. Documento";
+
+            if (CbConceptos.Text == "Clase" || CbConceptos.Text == "Asignación" || CbConceptos.Text == "No Documento" || CbConceptos.Text == "Referencia" || CbConceptos.Text == "Condición de Pago")
             {
                 ChPeriodo.Visible = true;
+                ChPeriodo.Checked = false;
                 RadioAB.Visible = false;
                 RadioCI.Visible = false;
+                LbCantidad.Visible = false;
+                TextoSaldo.Visible = false;
             }
-            else if(CbConceptos.Text == "Cliente")
+            else if (CbConceptos.Text == "Cliente")
             {
+                LbCantidad.Visible = false;
+                TextoSaldo.Visible = false;
                 RadioAB.Visible = true;
                 RadioCI.Visible = true;
                 RadioCI.Checked = true;
                 ChPeriodo.Visible = true;
+                ChPeriodo.Checked = false;
                 DateInicio.Visible = false;
                 DateFin.Visible = false;
                 ChPeriodo.Checked = false;
@@ -1111,6 +1210,31 @@ namespace SapPlugin
             }
         }
 
-     
+        private void TxtFolio_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                Buscar.Focus();
+
+            }
+        }
+
+        private void DateFin_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                Buscar.Focus();
+
+            }
+        }
+
+        private void CbConceptos_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                TxtFolio.Focus();
+
+            }
+        }
     }
 }
