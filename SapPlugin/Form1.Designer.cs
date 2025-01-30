@@ -29,18 +29,17 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Principal));
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            Texto1 = new Label();
-            BtnCargar = new Button();
-            AbrirArchivo = new OpenFileDialog();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Principal));
             TxtFolio = new TextBox();
             Texto2 = new Label();
             CbConceptos = new ComboBox();
             Buscar = new Button();
             Grid = new DataGridView();
+            Column12 = new DataGridViewTextBoxColumn();
             Column1 = new DataGridViewTextBoxColumn();
+            Column11 = new DataGridViewTextBoxColumn();
             Column10 = new DataGridViewTextBoxColumn();
             Column2 = new DataGridViewTextBoxColumn();
             Column3 = new DataGridViewTextBoxColumn();
@@ -50,7 +49,6 @@
             Column6 = new DataGridViewTextBoxColumn();
             Column7 = new DataGridViewTextBoxColumn();
             Column8 = new DataGridViewTextBoxColumn();
-            ChReferencia = new CheckBox();
             TextoSaldo = new Label();
             LbCantidad = new Label();
             MenuSaldo = new ContextMenuStrip(components);
@@ -60,41 +58,12 @@
             DateFin = new DateTimePicker();
             LbTitulo = new Label();
             Exportar = new Button();
+            GuardarArchivo = new SaveFileDialog();
+            RadioAB = new RadioButton();
+            RadioCI = new RadioButton();
             ((System.ComponentModel.ISupportInitialize)Grid).BeginInit();
             MenuSaldo.SuspendLayout();
             SuspendLayout();
-            // 
-            // Texto1
-            // 
-            Texto1.Anchor = AnchorStyles.Top;
-            Texto1.AutoSize = true;
-            Texto1.Font = new Font("Arial", 16F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            Texto1.ForeColor = SystemColors.ControlLight;
-            Texto1.Location = new Point(395, 112);
-            Texto1.Name = "Texto1";
-            Texto1.Size = new Size(212, 25);
-            Texto1.TabIndex = 0;
-            Texto1.Text = "Cargar archivo main:";
-            Texto1.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // BtnCargar
-            // 
-            BtnCargar.Anchor = AnchorStyles.Top;
-            BtnCargar.BackColor = Color.FromArgb(224, 224, 224);
-            BtnCargar.Cursor = Cursors.Hand;
-            BtnCargar.FlatAppearance.MouseDownBackColor = Color.Gray;
-            BtnCargar.FlatStyle = FlatStyle.Flat;
-            BtnCargar.ForeColor = SystemColors.ActiveCaptionText;
-            BtnCargar.Image = (Image)resources.GetObject("BtnCargar.Image");
-            BtnCargar.ImageAlign = ContentAlignment.MiddleLeft;
-            BtnCargar.Location = new Point(407, 156);
-            BtnCargar.Name = "BtnCargar";
-            BtnCargar.Size = new Size(180, 64);
-            BtnCargar.TabIndex = 1;
-            BtnCargar.Text = "Cargar Excel";
-            BtnCargar.TextAlign = ContentAlignment.MiddleRight;
-            BtnCargar.UseVisualStyleBackColor = false;
-            BtnCargar.Click += BtnCargar_Click;
             // 
             // TxtFolio
             // 
@@ -161,7 +130,7 @@
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             Grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             Grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            Grid.Columns.AddRange(new DataGridViewColumn[] { Column1, Column10, Column2, Column3, Column9, Column4, Column5, Column6, Column7, Column8 });
+            Grid.Columns.AddRange(new DataGridViewColumn[] { Column12, Column1, Column11, Column10, Column2, Column3, Column9, Column4, Column5, Column6, Column7, Column8 });
             Grid.Cursor = Cursors.Hand;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = SystemColors.Window;
@@ -178,19 +147,34 @@
             Grid.Size = new Size(957, 493);
             Grid.TabIndex = 6;
             // 
+            // Column12
+            // 
+            Column12.HeaderText = "Id";
+            Column12.Name = "Column12";
+            Column12.ReadOnly = true;
+            Column12.Width = 50;
+            // 
             // Column1
             // 
-            Column1.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             Column1.HeaderText = "Cliente";
             Column1.Name = "Column1";
             Column1.ReadOnly = true;
+            Column1.Width = 80;
+            // 
+            // Column11
+            // 
+            Column11.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            Column11.HeaderText = "Nombre Cliente";
+            Column11.MinimumWidth = 100;
+            Column11.Name = "Column11";
+            Column11.ReadOnly = true;
             // 
             // Column10
             // 
-            Column10.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             Column10.HeaderText = "Asignación";
             Column10.Name = "Column10";
             Column10.ReadOnly = true;
+            Column10.Width = 150;
             // 
             // Column2
             // 
@@ -201,17 +185,17 @@
             // 
             // Column3
             // 
-            Column3.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             Column3.HeaderText = "No. Documento";
             Column3.Name = "Column3";
             Column3.ReadOnly = true;
+            Column3.Width = 140;
             // 
             // Column9
             // 
-            Column9.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             Column9.HeaderText = "Factura";
             Column9.Name = "Column9";
             Column9.ReadOnly = true;
+            Column9.Width = 140;
             // 
             // Column4
             // 
@@ -230,36 +214,24 @@
             // 
             // Column6
             // 
-            Column6.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             Column6.HeaderText = "Importe";
             Column6.Name = "Column6";
             Column6.ReadOnly = true;
+            Column6.Width = 150;
             // 
             // Column7
             // 
-            Column7.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            Column7.HeaderText = "Referencia";
+            Column7.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Column7.HeaderText = "Saldo";
             Column7.Name = "Column7";
             Column7.ReadOnly = true;
+            Column7.Width = 84;
             // 
             // Column8
             // 
-            Column8.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             Column8.HeaderText = "Condición de Pago";
             Column8.Name = "Column8";
             Column8.ReadOnly = true;
-            // 
-            // ChReferencia
-            // 
-            ChReferencia.Anchor = AnchorStyles.Top;
-            ChReferencia.AutoSize = true;
-            ChReferencia.ForeColor = SystemColors.Control;
-            ChReferencia.Location = new Point(637, 47);
-            ChReferencia.Name = "ChReferencia";
-            ChReferencia.Size = new Size(122, 26);
-            ChReferencia.TabIndex = 7;
-            ChReferencia.Text = "Referencia";
-            ChReferencia.UseVisualStyleBackColor = true;
             // 
             // TextoSaldo
             // 
@@ -364,12 +336,42 @@
             Exportar.UseVisualStyleBackColor = false;
             Exportar.Click += Exportar_Click;
             // 
+            // RadioAB
+            // 
+            RadioAB.Anchor = AnchorStyles.Top;
+            RadioAB.AutoSize = true;
+            RadioAB.Font = new Font("Arial", 14.25F, FontStyle.Bold);
+            RadioAB.ForeColor = SystemColors.Control;
+            RadioAB.Location = new Point(264, 145);
+            RadioAB.Name = "RadioAB";
+            RadioAB.Size = new Size(55, 26);
+            RadioAB.TabIndex = 15;
+            RadioAB.TabStop = true;
+            RadioAB.Text = "AB";
+            RadioAB.UseVisualStyleBackColor = true;
+            // 
+            // RadioCI
+            // 
+            RadioCI.Anchor = AnchorStyles.Top;
+            RadioCI.AutoSize = true;
+            RadioCI.Font = new Font("Arial", 14.25F, FontStyle.Bold);
+            RadioCI.ForeColor = SystemColors.Control;
+            RadioCI.Location = new Point(264, 176);
+            RadioCI.Name = "RadioCI";
+            RadioCI.Size = new Size(47, 26);
+            RadioCI.TabIndex = 16;
+            RadioCI.TabStop = true;
+            RadioCI.Text = "CI";
+            RadioCI.UseVisualStyleBackColor = true;
+            // 
             // Principal
             // 
             AutoScaleDimensions = new SizeF(11F, 22F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(50, 50, 50);
             ClientSize = new Size(1008, 729);
+            Controls.Add(RadioCI);
+            Controls.Add(RadioAB);
             Controls.Add(Exportar);
             Controls.Add(LbTitulo);
             Controls.Add(DateFin);
@@ -377,14 +379,11 @@
             Controls.Add(ChPeriodo);
             Controls.Add(LbCantidad);
             Controls.Add(TextoSaldo);
-            Controls.Add(ChReferencia);
             Controls.Add(Grid);
             Controls.Add(Buscar);
             Controls.Add(CbConceptos);
             Controls.Add(Texto2);
             Controls.Add(TxtFolio);
-            Controls.Add(BtnCargar);
-            Controls.Add(Texto1);
             Font = new Font("Arial", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             FormBorderStyle = FormBorderStyle.Fixed3D;
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -401,16 +400,11 @@
         }
 
         #endregion
-
-        private Label Texto1;
-        private Button BtnCargar;
-        private OpenFileDialog AbrirArchivo;
         private TextBox TxtFolio;
         private Label Texto2;
         private ComboBox CbConceptos;
         private Button Buscar;
         private DataGridView Grid;
-        private CheckBox ChReferencia;
         private Label TextoSaldo;
         private Label LbCantidad;
         private ContextMenuStrip MenuSaldo;
@@ -418,7 +412,14 @@
         private CheckBox ChPeriodo;
         private DateTimePicker DateInicio;
         private DateTimePicker DateFin;
+        private Label LbTitulo;
+        private Button Exportar;
+        private SaveFileDialog GuardarArchivo;
+        private RadioButton RadioAB;
+        private RadioButton RadioCI;
+        private DataGridViewTextBoxColumn Column12;
         private DataGridViewTextBoxColumn Column1;
+        private DataGridViewTextBoxColumn Column11;
         private DataGridViewTextBoxColumn Column10;
         private DataGridViewTextBoxColumn Column2;
         private DataGridViewTextBoxColumn Column3;
@@ -428,7 +429,5 @@
         private DataGridViewTextBoxColumn Column6;
         private DataGridViewTextBoxColumn Column7;
         private DataGridViewTextBoxColumn Column8;
-        private Label LbTitulo;
-        private Button Exportar;
     }
 }
