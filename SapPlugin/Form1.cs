@@ -51,7 +51,8 @@ namespace SapPlugin
         }
         public void CargarExcel()
         {
-            string FileName = "C:\\Users\\NPACHECO\\Music\\CARTERA.XLSX";
+            //string FileName = "C:\\Users\\NPACHECO\\Music\\CARTERA.XLSX";
+            string FileName = @"G:\\Finanzas\\Deducciones\\Proyector UNO\\CARTERA.XLSX";
             try
             {
                 // Abre el archivo Excel
@@ -108,7 +109,8 @@ namespace SapPlugin
                 // Captura cualquier otro tipo de error
                 MessageBox.Show("Error al procesar el archivo Excel: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            string FileNameNotas = "C:\\Users\\NPACHECO\\Music\\Relacion de Notas.xlsx";
+            string FileNameNotas = @"G:\\Finanzas\\Deducciones\\Proyector UNO\\Relacion de Notas.xlsx";
+            //string FileNameNotas = "C:\\Users\\NPACHECO\\Music\\Relacion de Notas.xlsx";
             try
             {
                 // Abre el archivo Excel
@@ -150,7 +152,8 @@ namespace SapPlugin
                 // Captura cualquier otro tipo de error
                 MessageBox.Show("Error al procesar el archivo Excel: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            string FileNameClientes = "C:\\Users\\NPACHECO\\Music\\Copia de Project UNO Book of Record V21.xlsx";
+            //string FileNameClientes= "C:\\Users\\NPACHECO\\Music\\Copia de Project UNO Book of Record V21.xlsx";
+            string FileNameClientes = @"G:\\Finanzas\\Deducciones\\Proyector UNO\\Copia de Project UNO Book of Record V21.xlsx";
             try
             {
                 // Abre el archivo Excel
@@ -1111,7 +1114,7 @@ namespace SapPlugin
             if (CbConceptos.Text == "Asignación")
                 TxtFolio.PlaceholderText = "Asignación";
             if (CbConceptos.Text == "Relación AB")
-                TxtFolio.PlaceholderText = "No. Documento";
+                TxtFolio.PlaceholderText = "Factura";
 
             if (CbConceptos.Text == "Clase" || CbConceptos.Text == "Asignación" || CbConceptos.Text == "No Documento" || CbConceptos.Text == "Referencia" || CbConceptos.Text == "Condición de Pago")
             {
