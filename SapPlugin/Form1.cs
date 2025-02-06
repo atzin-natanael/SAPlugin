@@ -51,8 +51,17 @@ namespace SapPlugin
         }
         public void CargarExcel()
         {
-            //string FileName = "C:\\Users\\NPACHECO\\Music\\CARTERA.XLSX";
-            string FileName = @"G:\\Finanzas\\Deducciones\\Proyector UNO\\CARTERA.XLSX";
+            MessageBox.Show("Primero, carga el archivo de la Cartera", "Importante", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AbrirArchivo.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
+            AbrirArchivo.Title = "Seleccionar un archivo de Excel";
+            string FileName = string.Empty;
+            // Mostrar el diálogo y verificar si el usuario hizo clic en "Abrir"
+            if (AbrirArchivo.ShowDialog() == DialogResult.OK)
+            {
+                FileName = AbrirArchivo.FileName;
+            }
+            else
+                this.Close();
             try
             {
                 // Abre el archivo Excel
@@ -109,8 +118,18 @@ namespace SapPlugin
                 // Captura cualquier otro tipo de error
                 MessageBox.Show("Error al procesar el archivo Excel: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            string FileNameNotas = @"G:\\Finanzas\\Deducciones\\Proyector UNO\\Relacion de Notas.xlsx";
-            //string FileNameNotas = "C:\\Users\\NPACHECO\\Music\\Relacion de Notas.xlsx";
+            MessageBox.Show("Ahora, carga el archivo de Notas", "Importante", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.BringToFront();
+            AbrirArchivo.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
+            AbrirArchivo.Title = "Seleccionar un archivo de Excel";
+            string FileNameNotas = string.Empty;
+            // Mostrar el diálogo y verificar si el usuario hizo clic en "Abrir"
+            if (AbrirArchivo.ShowDialog() == DialogResult.OK)
+            {
+                FileNameNotas= AbrirArchivo.FileName;
+            }
+            else
+                this.Close();
             try
             {
                 // Abre el archivo Excel
@@ -152,8 +171,18 @@ namespace SapPlugin
                 // Captura cualquier otro tipo de error
                 MessageBox.Show("Error al procesar el archivo Excel: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            //string FileNameClientes= "C:\\Users\\NPACHECO\\Music\\Copia de Project UNO Book of Record V21.xlsx";
-            string FileNameClientes = @"G:\\Finanzas\\Deducciones\\Proyector UNO\\Copia de Project UNO Book of Record V21.xlsx";
+            MessageBox.Show("Por último, carga el archivo de Clientes", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.BringToFront();
+            AbrirArchivo.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
+            AbrirArchivo.Title = "Seleccionar un archivo de Excel";
+            string FileNameClientes = string.Empty;
+            // Mostrar el diálogo y verificar si el usuario hizo clic en "Abrir"
+            if (AbrirArchivo.ShowDialog() == DialogResult.OK)
+            {
+                FileNameClientes = AbrirArchivo.FileName;
+            }
+            else
+                this.Close();
             try
             {
                 // Abre el archivo Excel
